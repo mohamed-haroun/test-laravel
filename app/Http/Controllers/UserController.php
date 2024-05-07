@@ -11,21 +11,18 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $userEmail = $request->input('email'); // Use input() for better security
-        $userPassword = $request->input('password');
-    
-        $user = User::where('email', $userEmail)->first();
-        if ($user) {
-            if (password_verify($userPassword, $user->password)) {
-                // Successful login logic
-            } else {
-                // Invalid password logic
-            }
-        } else {
-            // User not found logic
-        }
-    
-        return response()->json(...); // this is just a placeholder , that leave C
+        $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'max:255']
+        ]);
+
+        Auth::attempt($request->only('email', 'password'));
+
+        $request->session()->regenerate();
+
+        return response()->json([
+            'message' => "Logged in successfully";
+        ]);
     }
     
 
